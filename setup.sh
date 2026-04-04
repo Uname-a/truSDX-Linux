@@ -385,4 +385,7 @@ echo -e "${c_yellow}Tip: Use 'pavucontrol' → Recording/Playback tabs to pick T
 echo -e "${c_yellow}Troubleshooting: If 'Loopback' card does not exist, run 'sudo modprobe snd-aloop' and reboot${c_reset}"
 
 echo
-read -rp "Press Enter to exit..."
+# Avoid hanging in non-interactive environments (CI, automation, remote agents)
+if [[ -t 0 ]]; then
+  read -rp "Press Enter to exit..."
+fi
