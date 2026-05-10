@@ -247,7 +247,21 @@ TS480_COMMANDS = {
 }
 
 # Configuration file for persistent settings
-CONFIG_FILE = '/home/milton/.config/trusdx-ai.json'
+def resolve_config_file() -> str:
+    """Resolve config file path using XDG conventions with safe fallbacks.
+
+    Returns:
+        Absolute path to trusdx-ai.json.
+    """
+    xdg_config_home = os.environ.get('XDG_CONFIG_HOME')
+    if xdg_config_home:
+        expanded = os.path.expanduser(xdg_config_home)
+        if os.path.isabs(expanded):
+            return os.path.join(expanded, 'trusdx-ai.json')
+    return os.path.expanduser('~/.config/trusdx-ai.json')
+
+
+CONFIG_FILE = resolve_config_file()
 PERSISTENT_PORTS = {
     'cat_port': '/tmp/trusdx_cat',
     'audio_device': 'ALSA Loopback card 0'
@@ -732,7 +746,12 @@ def load_config():
     try:
         if os.path.exists(CONFIG_FILE):
             with open(CONFIG_FILE, 'r') as f:
-                return json.load(f)
+    loaded = json.load(f)
+    if isinstance(loaded, dict):
+        merged = PERSISTENT_PORTS.copy()
+        merged.update(loaded)
+        return merged
+    log("Config file is not a JSON object; using defaults", "WARNING")
     except KeyboardInterrupt:
         raise
     except Exception as e:
