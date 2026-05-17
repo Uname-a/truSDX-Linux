@@ -746,12 +746,12 @@ def load_config():
     try:
         if os.path.exists(CONFIG_FILE):
             with open(CONFIG_FILE, 'r') as f:
-        loaded = json.load(f)
-        if isinstance(loaded, dict):
-            merged = PERSISTENT_PORTS.copy()
-            merged.update(loaded)
-            return merged
-        log("Config file is not a JSON object; using defaults", "WARNING")
+                loaded = json.load(f)
+            if isinstance(loaded, dict):
+                merged = PERSISTENT_PORTS.copy()
+                merged.update(loaded)
+                return merged
+            log("Config file is not a JSON object; using defaults", "WARNING")
     except KeyboardInterrupt:
         raise
     except Exception as e:
