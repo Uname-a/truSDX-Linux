@@ -3099,6 +3099,10 @@ def get_platform_config():
         # Prefer PulseAudio/PipeWire routing when TRUSDX exists (detected via pactl), unless --force-alsa is set
         if config.get('force_alsa', False):
             state['using_pulse_trusdx'] = False
+        elif config.get('force_pulse', False):
+            v_in = "pulse"
+            v_out = "pulse"
+            state['using_pulse_trusdx'] = True
         else:
             if _detect_trusdx_with_pactl():
                 # Use PulseAudio device and route streams to TRUSDX via pactl after open
@@ -3801,6 +3805,7 @@ if __name__ == '__main__':
     parser.add_argument("--ptt-silence-timeout", type=float, default=None, help="Auto-release PTT if no TX audio for this many seconds (default: 2.0)")
     parser.add_argument("--silence-pp-threshold", type=int, default=None, help="Peak-to-peak threshold (0-255) to consider TX audio non-silent for safety timer (default: 2)")
     parser.add_argument("--force-alsa", action="store_true", default=False, help="Force ALSA Loopback (trusdx_tx/trusdx_rx) devices and disable Pulse/TRUSDX routing")
+    parser.add_argument("--force-pulse", action="store_true", default=False, help="Force PulseAudio/default (pulse) audio device for both RX and TX, regardless of TRUSDX detection")
     parser.add_argument("--defer-cat-during-tx", action="store_true", default=True, help="Defer forwarding CAT set-commands to radio during TX; ack locally and queue to send after TX ends")
     parser.add_argument("--tx-start-grace", type=float, default=1.2, help="Seconds to ignore initial TX silence for safety auto-release (warm-up protection)")
     parser.add_argument("--use-us-pacer", action="store_true", default=True, help="Use paced US writer (steady 11,520 B/s) to match .exe behavior")
